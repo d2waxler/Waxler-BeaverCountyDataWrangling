@@ -1,0 +1,107 @@
+Microsoft Windows [Version 10.0.19041.508]
+(c) 2020 Microsoft Corporation. All rights reserved.
+
+C:\Users\d2wax\Documents\WGU\Data Wrangling\Project>sqlite3 BeaverCounty.db
+SQLite version 3.9.2 2015-11-02 18:31:45
+Enter ".help" for usage hints.
+sqlite> .mode csv
+sqlite> .import nodes.csv nodes1
+sqlite> .import ways.csv ways1
+sqlite> .import nodes_tags.csv nodes_tags1
+sqlite> .import ways_tags.csv ways_tags1
+sqlite> .import ways_nodes.csv ways_nodes1
+sqlite> CREATE TABLE nodes (
+   ...>     id INTEGER PRIMARY KEY NOT NULL,
+   ...>     lat REAL,
+   ...>     lon REAL,
+   ...>     user TEXT,
+   ...>     uid INTEGER,
+   ...>     version INTEGER,
+   ...>     changeset INTEGER,
+   ...>     timestamp TEXT
+   ...> );
+sqlite> CREATE TABLE nodes_tags (
+   ...>     id INTEGER,
+   ...>     key TEXT,
+   ...>     value TEXT,
+   ...>     category TEXT,
+   ...>     FOREIGN KEY (id) REFERENCES nodes(id)
+   ...> );
+sqlite>
+sqlite> CREATE TABLE ways (
+   ...>     id INTEGER PRIMARY KEY NOT NULL,
+   ...>     user TEXT,
+   ...>     uid INTEGER,
+   ...>     version TEXT,
+   ...>     changeset INTEGER,
+   ...>     timestamp TEXT
+   ...> );
+sqlite> CREATE TABLE ways_tags (
+   ...>     id INTEGER NOT NULL,
+   ...>     key TEXT NOT NULL,
+   ...>     value TEXT NOT NULL,
+   ...>     category TEXT,
+   ...>     FOREIGN KEY (id) REFERENCES ways(id)
+   ...> );
+sqlite> CREATE TABLE ways_nodes (
+   ...>     id INTEGER NOT NULL,
+   ...>     node_id INTEGER NOT NULL,
+   ...>     position INTEGER NOT NULL,
+   ...>     FOREIGN KEY (id) REFERENCES ways(id),
+   ...>     FOREIGN KEY (node_id) REFERENCES nodes(id)
+   ...> );
+sqlite> BEGIN TRANSACTION;
+sqlite> INSERT INTO nodes SELECT * FROM nodes1;
+sqlite> INSERT INTO nodes_tags SELECT * FROM nodes_tags1;
+sqlite> INSERT INTO ways SELECT * FROM ways1;
+sqlite> INSERT INTO ways_nodes SELECT * FROM ways_nodes1;
+sqlite> INSERT INTO ways_tags SELECT * FROM ways_tags1;
+sqlite> DROP table nodes1;
+sqlite> DROP table nodes_tags1;
+sqlite> DROP table ways1;
+sqlite> DROP table ways_nodes1;
+sqlite> DROP table ways_tags1;
+sqlite>
+sqlite> COMMIT;
+sqlite> .tables
+nodes       nodes_tags  ways        ways_nodes  ways_tags
+sqlite> .schema
+CREATE TABLE nodes (
+    id INTEGER PRIMARY KEY NOT NULL,
+    lat REAL,
+    lon REAL,
+    user TEXT,
+    uid INTEGER,
+    version INTEGER,
+    changeset INTEGER,
+    timestamp TEXT
+);
+CREATE TABLE nodes_tags (
+    id INTEGER,
+    key TEXT,
+    value TEXT,
+    category TEXT,
+    FOREIGN KEY (id) REFERENCES nodes(id)
+);
+CREATE TABLE ways (
+    id INTEGER PRIMARY KEY NOT NULL,
+    user TEXT,
+    uid INTEGER,
+    version TEXT,
+    changeset INTEGER,
+    timestamp TEXT
+);
+CREATE TABLE ways_tags (
+    id INTEGER NOT NULL,
+    key TEXT NOT NULL,
+    value TEXT NOT NULL,
+    category TEXT,
+    FOREIGN KEY (id) REFERENCES ways(id)
+);
+CREATE TABLE ways_nodes (
+    id INTEGER NOT NULL,
+    node_id INTEGER NOT NULL,
+    position INTEGER NOT NULL,
+    FOREIGN KEY (id) REFERENCES ways(id),
+    FOREIGN KEY (node_id) REFERENCES nodes(id)
+);
